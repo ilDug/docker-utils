@@ -1,0 +1,27 @@
+rsconf = {
+   _id : "rs0",
+   members: [
+       {
+           "_id": 0,
+           "host": "mongo1.dag.lan:27017",
+           "priority": 4
+       },
+       {
+           "_id": 1,
+           "host": "mongo1.dag.lan:27017",
+           "priority": 2
+       },
+       {
+           "_id": 2,
+           "host": "mongo1.dag.lan:27017",
+           "priority": 1
+       }
+   ]
+}
+
+rs.initiate(rsconf)
+docker exec -it mongo1 mongosh
+
+# rs.conf() 
+# rs.status()
+# rs.secondaryOk() 
