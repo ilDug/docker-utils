@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  api:
+    name: api
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+       MODE: ${MODE:-PRODUCTION} # PRODUCTION || DEVELOPMENT
+       KEY_FILE: /run/secrets/my_secret
+    ports:
+      - 8000:8000
+    volumes:
+      - ./app:/app
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    # depends_on:
+    #   - db
+    # networks:
+    #   - dagnet
+    # profiles:
+    #  - debug
+    secrets:
+      - my_secret
+
+# networks:
+#   dagnet:
+
+secrets:
+  my_secret:
+    file: ./my_secret.txt
+  my_other_secret:
+    external: true

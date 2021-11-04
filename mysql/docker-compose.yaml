@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: ./.secrets/db_mysql_root_pw.txt
+      TZ: Europe/Rome
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+      - ./db/data:/var/lib/mysql
+    networks:
+      - dagnet
+
+  pma:
+    image: phpmyadmin:5.1-apache
+    ports:
+      - 8001:80
+    environment:
+      PMA_HOST: "db"
+      # PMA_ARBITRARY: 1
+      PMA_ABSOLUTE_URI: "https://fastapi.dag.lan/pma/"
+    depends_on:
+      - db
+    networks:
+      - dagnet
+
+
+networks:
+  dagnet:
