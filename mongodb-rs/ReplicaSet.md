@@ -74,3 +74,17 @@ rs.secondaryOk()
 ```
 mongodb://root:xxxxxxx@mongo1.dag.lan:27017,mongo2.dag.lan:27017,mongo3.dag.lan:27017/?replicaSet=rs0
 ```
+
+# Add Users
+
+
+```javascript
+use admin
+db.createUser({ 
+    user: "ekuser" , 
+    pwd: "xxxxxxxx", 
+    roles: [
+        "readWriteAnyDatabase"
+    ]
+})
+```
