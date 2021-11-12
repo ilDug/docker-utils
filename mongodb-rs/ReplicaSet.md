@@ -50,14 +50,23 @@ admin = db.getSiblingDB("admin")
 admin.createUser(
     {
         user: "root",
-        pwd: "XXXXXXXXXXXXXXXXX",
+        pwd: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         roles: [
-            { role: "userAdminAnyDatabase", db: "admin" },
-            { role: "clusterAdmin", db: "admin" }
+            { db: "admin", role: "userAdminAnyDatabase"},
+            { db: "admin", role: "dbAdminAnyDatabase" },
+            { db: "admin", role: "clusterAdmin" },
+            { db: "admin", role: "root" },
         ]
     }
 )
 
+db.grantRolesToUser("root", [
+    { db: "admin", role: "userAdminAnyDatabase"},
+    { db: "admin", role: "dbAdminAnyDatabase" },
+    { db: "admin", role: "clusterAdmin" },
+    { db: "admin", role: "root" },
+
+])
 
 rs.conf()
 rs.status()
@@ -75,6 +84,11 @@ rs.secondaryOk()
 mongodb://root:xxxxxxx@mongo1.dag.lan:27017,mongo2.dag.lan:27017,mongo3.dag.lan:27017/?replicaSet=rs0
 ```
 
+```
+mongodb://username:XXXXXXXXXXX@mongo1.dag.lan:27017,mongo2.dag.lan:27017,mongo3.dag.lan:27017/databasename?authSource=admin&replicaSet=rs0
+```
+
+
 # Add Users
 
 
@@ -84,7 +98,13 @@ db.createUser({
     user: "ekuser" , 
     pwd: "xxxxxxxx", 
     roles: [
-        "readWriteAnyDatabase"
+        { db: "ek", role: "readWrite" },
+        { db: "ek", role: "dbOwner" },
     ]
 })
+
+
+db.changeUserPassword("ekuser", passwordPrompt())
+
+
 ```
