@@ -5,7 +5,7 @@ cat .env
 echo "password root generata"
 
 echo "......"
-echo "generazione della key"
+echo "generazione della key e delle cartelle"
 mkdir key backup
 openssl rand -base64 756 > key/mongo_key_file
 chmod 400 key/mongo_key_file

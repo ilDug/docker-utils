@@ -1,0 +1,23 @@
+docker exec -it CONTAINERNAME bash
+
+#    mongodump -u root -p XXX --out=/backup/20211010
+#    mongorestore -u root - p XXX /backup/20211010
+#    mongoimport -u bloguser  -p XXX -d blog -c views --jsonArray  --file ./views.json 
+
+
+mongodump    -v -u root -p password -d dat -c posts --authenticationDatabase admin  -o=/backup/20211101_1 
+
+mongorestore -v -u root -p password --authenticationDatabase admin --nsInclude="blog.posts" --drop --dir=/backup/20211101_1/ --dryRun
+
+mongoexport  -v -u root -p password --authenticationDatabase admin -d blog -c posts --jsonArray --pretty -o=/backup/nomefile.json
+
+mongoimport  -v -u root -p password --authenticationDatabase admin -d blog -c posts --jsonArray --file=/backup/nomefile.json
+
+
+################################
+# direttamente dall'host
+###############################
+
+docker exec <mongodb container> sh -c 'mongodump --authenticationDatabase admin -u <user> -p <password> --db <database> --archive' > db.dump
+
+docker exec -i <mongodb container> sh -c 'mongorestore --authenticationDatabase admin -u <user> -p <password> --db <database> --archive' < db.dump

@@ -3,7 +3,7 @@ version: "3.9"
 services:
 
   mongodb:
-    image: mongo
+    image: mongo:5
     restart: always
     container_name: mongodb
     # environment:
@@ -16,7 +16,6 @@ services:
     volumes:
       - mongodata:/data/db
       - ./:/app
-      # - ./init:/docker-entrypoint-initdb.d
     entrypoint: [ "/usr/bin/mongod", "--keyFile", "/app/key/mongo_key_file", "--replSet", "rs0", "--bind_ip_all"]
     networks:
       - mongonet
@@ -27,11 +26,4 @@ volumes:
 
 networks:
   mongonet:
-
-# secrets: 
-#   MONGO_ROOT_PW:
-#     file: ./.secrets/mongo_root_pw
-#   MONGO_KEY_FILE:
-#     file: ./.secrets/mongo_key_file
-
 

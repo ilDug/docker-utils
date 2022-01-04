@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+
+  mongo:
+    image: mongo:5
+    restart: unless-stopped
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PW:?err} 
+      # MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/MONGO_ROOT_PW
+    ports:
+      - xxxx:27017 #DEV | #PROD = elimina
+    networks:
+      - myprojectnet
+    volumes:
+      - ./db/mongo/data:/data/db
+      # - mongodata:/data/db
+      - ./db/mongo/init:/docker-entrypoint-initdb.d
+      - ./db/mongo/backup:/backup
+    # secrets:
+    #   - MONGO_ROOT_PW
+
+
+
+networks:
+  myprojectnet:
+
+volumes:
+  mongodata:
+
+# secrets:
+#   MONGO_ROOT_PW:
+#     file: ./.secrets/mongo_root_pw.txt
