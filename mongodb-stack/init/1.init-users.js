@@ -9,9 +9,8 @@ admin.createUser({
     ]
 })
 
-db.changeUserPassword("myusername", "xxxxxxxx")
+// db.changeUserPassword("myusername", passwordPrompt())
 
-
-mydb = db.getSiblingDB('mydb')
-coll1 = users.createCollection("mycollection1")
-coll2 = users.createCollection("mycollection2")
+// mydb = db.getSiblingDB('mydb')
+// coll1 = users.createCollection("mycollection1")
+// coll2 = users.createCollection("mycollection2")

@@ -1,21 +1,20 @@
 from typing import Union
 from pydantic.types import UUID5
-from models.account import JWTModel
+from account.models import JWTModel
 import uuid
 from time import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from config.conf import JWT_KEY_PATH, JWT_CERT_PATH
-import jwt
 from cryptography.x509 import load_pem_x509_certificate
 from fastapi import HTTPException
+import jwt
 
 
-class JWT():
+class JWT:
     rsa_crt_path: Path = JWT_CERT_PATH
     rsa_JWT_KEY_PATH: Path = JWT_KEY_PATH
-    JWT_NAMESPACE: uuid.UUID = uuid.UUID(
-        "69d3e8f4-0872-4f7f-9f35-d2ee437e0887")
+    JWT_NAMESPACE: uuid.UUID = uuid.UUID("69d3e8f4-0872-4f7f-9f35-d2ee437e0887")
 
     @classmethod
     def jti(cls, uid: str) -> str:
@@ -34,7 +33,7 @@ class JWT():
     @classmethod
     def create(cls, user: dict, duration=30) -> str:
         try:
-            jti = {"jti": cls.jti(user['uid'])}
+            jti = {"jti": cls.jti(user["uid"])}
             key = cls.rsa_JWT_KEY_PATH.read_text()
             payload = cls.base_payload(duration)
             payload = {**payload, **user, **jti}

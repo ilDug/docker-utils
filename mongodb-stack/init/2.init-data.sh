@@ -1,1 +1,0 @@
-#mongorestore -v --nsInclude="blog.posts" --drop --dir=/backup/20211101_1/ 

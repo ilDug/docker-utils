@@ -8,19 +8,21 @@ services:
     container_name: mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PW:?err} 
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PW:?err}
+      MONGO_USER_PW: ${MONGO_USER_PW:?err}
       # MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/MONGO_ROOT_PW
     ports:
       - xxxx:27017 #DEV | #PROD = elimina
     networks:
       - myprojectnet
     volumes:
-      - ./db/mongo/data:/data/db
+      - ./data:/data/db
       # - mongodata:/data/db
-      - ./db/mongo/init:/docker-entrypoint-initdb.d
-      - ./db/mongo/backup:/backup
+      - ./init:/docker-entrypoint-initdb.d
+      - ./backup:/backup
     # secrets:
     #   - MONGO_ROOT_PW
+
 
 
 

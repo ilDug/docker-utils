@@ -1,15 +1,23 @@
-from string import Template
 import bcrypt
+
+from string import Template
 from email_validator import validate_email
-from utils.mail import DagMail, DagMailConfig
-from models.account import UserModel, UserOperation
-from config.conf import EMAIL_TEMPLATE_BASE, EMAIL_TEMPLATE_RECOVER, MAIL_CONFIG, MONGO_AUTH
-from controllers.account import Account
+from datetime import datetime, timedelta
 from fastapi import HTTPException
 from pymongo import MongoClient
-from utils.string import random_string
-from config.conf import ACTIVATION_KEY_LENGTH
-from datetime import datetime, timedelta
+
+from core import DagMail, DagMailConfig
+from core.utils.string import random_string
+from account.models import UserModel, UserOperation
+from account.controllers import Account
+from config.conf import (
+    EMAIL_TEMPLATE_BASE,
+    EMAIL_TEMPLATE_RECOVER,
+    MAIL_CONFIG,
+    MONGO_CS,
+    ACTIVATION_KEY_LENGTH,
+)
+
 #############################################################################################
 #################  PASSWORD #################################################################
 #############################################################################################
@@ -29,38 +37,39 @@ class Password(Account):
         try:
             validate_email(email)
         except Exception as e:
-            raise HTTPException(400,  "indirizzo email non valido")
+            raise HTTPException(400, "indirizzo email non valido")
         email = email.lower().strip()
 
-        with MongoClient(MONGO_AUTH) as c:
-            user = c.users.users.find_one({'email': email})
+        with MongoClient(MONGO_CS) as c:
+            user = c.shop.users.find_one({"email": email})
             if user is None:
-                raise HTTPException(
-                    400, "indirizzo email non presente nel database")
+                raise HTTPException(400, "indirizzo email non presente nel database")
             user = UserModel(**user)
 
             # cerca se la chiave di attivazione esiste
             while True:
                 recover_key = random_string(ACTIVATION_KEY_LENGTH)
-                if c.users.operations.find_one({"key": recover_key}) is None:
+                if c.shop.operations.find_one({"key": recover_key}) is None:
                     break
 
-            id = c.users.operations.insert_one({
-                "uid": user.uid,
-                "key": recover_key,
-                "created_at": datetime.utcnow(),
-                "used_at": None,
-                "scope": self.RECOVER_SCOPE
-            }).inserted_id
+            id = c.shop.operations.insert_one(
+                {
+                    "uid": user.uid,
+                    "key": recover_key,
+                    "created_at": datetime.utcnow(),
+                    "used_at": None,
+                    "scope": self.RECOVER_SCOPE,
+                }
+            ).inserted_id
 
             if id is None:
-                raise HTTPException(
-                    500, "Errore creazione chiave di recupero")
+                raise HTTPException(500, "Errore creazione chiave di recupero")
 
             # manda l'email di recover password
             if not self.send_recover_email(email, recover_key):
                 raise HTTPException(
-                    500, "Errore nell recupero della password,  prova più tardi")
+                    500, "Errore nell recupero della password,  prova più tardi"
+                )
 
             return True
 
@@ -70,22 +79,24 @@ class Password(Account):
     def restore_init(self, key: str) -> str:
         if not key or len(key) != ACTIVATION_KEY_LENGTH:
             raise HTTPException(
-                400, "la richiesta non contiene la chiave di attivazione corretta")
+                400, "la richiesta non contiene la chiave di attivazione corretta"
+            )
 
-        with MongoClient(MONGO_AUTH) as c:
+        with MongoClient(MONGO_CS) as c:
             sql = "SELECT * FROM activations WHERE activationKey = %s"
-            r = c.users.operations.find_one({'key': key})
+            r = c.shop.operations.find_one({"key": key})
             if not r:
                 raise HTTPException(500, "chiave di recupero inesistente")
             operation = UserOperation(**r)
 
             if operation.scope != self.RECOVER_SCOPE:
                 raise HTTPException(
-                    400, "la chiave fornita non e' adatta per il recupero della password")
+                    400,
+                    "la chiave fornita non e' adatta per il recupero della password",
+                )
 
             if operation.used_at is not None:
-                raise HTTPException(
-                    400, "la chiave fornita e' gia' stata utilizzata")
+                raise HTTPException(400, "la chiave fornita e' gia' stata utilizzata")
 
             limit_date = operation.created_at + timedelta(hours=1)
             if datetime.utcnow() > limit_date:
@@ -108,20 +119,22 @@ class Password(Account):
         if not uid:
             raise HTTPException(500, "identificativo dell'utente non trovato")
 
-        with MongoClient(MONGO_AUTH) as c:
+        with MongoClient(MONGO_CS) as c:
             salt = bcrypt.gensalt()
             hashed_pw = bcrypt.hashpw(newpassword.encode(), salt).decode()
-            res = c.users.users.update_one(
-                {'uid': uid}, {'$set': {'hashed_password': hashed_pw}}).modified_count
+            res = c.shop.users.update_one(
+                {"uid": uid}, {"$set": {"hashed_password": hashed_pw}}
+            ).modified_count
             if res <= 0:
                 raise HTTPException(
-                    500, "errore nell'impostazione della nuova password")
+                    500, "errore nell'impostazione della nuova password"
+                )
 
-            res = c.users.operations.update_one(
-                {'key': key}, {'$set': {'used_at': datetime.utcnow()}}).modified_count
+            res = c.shop.operations.update_one(
+                {"key": key}, {"$set": {"used_at": datetime.utcnow()}}
+            ).modified_count
             if res <= 0:
-                raise HTTPException(
-                    500, "errore aggiornamento della chiave")
+                raise HTTPException(500, "errore aggiornamento della chiave")
 
             return True
 
@@ -129,8 +142,7 @@ class Password(Account):
     # @return boolean se la mail è stata invata
     def send_recover_email(self, email: str, recover_key: str) -> bool:
         content_template = EMAIL_TEMPLATE_RECOVER.read_text()
-        content = Template(content_template).substitute(
-            RECOVER_KEY=recover_key)
+        content = Template(content_template).substitute(RECOVER_KEY=recover_key)
         body_template = EMAIL_TEMPLATE_BASE.read_text()
         body = Template(body_template).substitute(CONTENT=content)
         try:

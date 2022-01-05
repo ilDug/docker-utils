@@ -16,12 +16,12 @@ class DagMailConfig(BaseModel):
     password: str
 
 
-class DagMail():
+class DagMail:
     mail_server = None
     sender: str
     receivers = []
 
-    def __init__(self,  config: DagMailConfig) -> None:
+    def __init__(self, config: DagMailConfig) -> None:
         self.config = config
         self.sender = self.config.user
 
@@ -41,8 +41,7 @@ class DagMail():
     def create_server(self):
         print("creazione del mails server ...")
         self.mail_server = smtplib.SMTP_SSL(
-            host=self.config.host,
-            port=self.config.port
+            host=self.config.host, port=self.config.port
         )
         return self
 
@@ -51,7 +50,7 @@ class DagMail():
         self.mail_server.login(self.config.user, self.config.password)
         return self
 
-    #opzionale
+    # opzionale
     def set_sender(self, address: str = None):
         self.sender = self.config.user if not address else address
         print("aggiunto mittente...")
@@ -63,15 +62,16 @@ class DagMail():
         return self
 
     def messageHTML(self, body, subject):
-        self.msg = MIMEText(body, 'html')
-        self.msg['Subject'] = subject
-        self.msg['From'] = self.sender
-        self.msg['To'] = ', '.join(self.receivers)
+        self.msg = MIMEText(body, "html")
+        self.msg["Subject"] = subject
+        self.msg["From"] = self.sender
+        self.msg["To"] = ", ".join(self.receivers)
         return self
 
     def send(self):
         err = self.mail_server.sendmail(
-            self.sender, self.receivers, self.msg.as_string())
+            self.sender, self.receivers, self.msg.as_string()
+        )
         print("messaggio inviato")
         return err
 
@@ -97,7 +97,7 @@ class DagMail():
 # except Exception as e:
 #     print(str(e))
 
-#oppure
+# oppure
 
 # ms = DagMail(config)
 # ms.create_server()
