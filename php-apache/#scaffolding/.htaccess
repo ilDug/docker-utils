@@ -1,0 +1,23 @@
+RewriteEngine On
+RewriteBase /
+
+#forza https
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+#elimina www
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+ErrorDocument 404 /pages/404-page-not-found.php
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteRule ^(.+)$ index.php [QSA,L]
+
+#nasconde (403 FORBIDDEN)  la cartelle di sistema
+RewriteRule ^lib - [R=403,L]
+RewriteRule ^src - [R=403,L]
+
+

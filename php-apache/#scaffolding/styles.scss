@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&family=Josefin+Sans:wght@300;400;700&family=Montserrat:ital,wght@0,100;0,400;0,700;1,400&display=swap');
+
+@import "variables";
+@import "~bootstrap/scss/bootstrap.scss";
+@import "~animate.css/animate.min.css";
+
+$fa-font-path: "../../assets/fonts" !default;
+@import "~@fortawesome/fontawesome-pro/scss/fontawesome.scss";
+@import "~@fortawesome/fontawesome-pro/scss/regular.scss";
+@import "~@fortawesome/fontawesome-pro/scss/solid.scss";
+@import "~@fortawesome/fontawesome-pro/scss/light.scss";
+@import "~@fortawesome/fontawesome-pro/scss/thin.scss";
+@import "~@fortawesome/fontawesome-pro/scss/brands.scss";
+@import "~@fortawesome/fontawesome-pro/scss/duotone.scss";
+@import "~@fortawesome/fontawesome-pro/scss/_duotone-icons.scss";
+
+
+@import "footer";
+@import "header";
+@import "home";
+@import "paginator";
+@import "article";
+@import "aside";
+@import "social_icons";
+@import "cookie-consent";
+@import "privacy";
+@import "about";
+
+
+$backgroundColor: $gray-100;
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  background-color: $backgroundColor;
+}
+
+a,
+a:hover {
+  color: $color-primary;
+  text-decoration: none;
+}
+
+::selection {
+    background: #F07057;
+}
+::-moz-selection {
+    background: #F07057; /* Firefox */
+}
+::-webkit-selection {
+    background: #F07057; /* Safari */
+}
+
+.dag-dropdown{
+    z-index: 999999;
+    background-color: $gray-300;
+    padding: 0.5rem;
+    display: none;
+    &.active{
+        display: block;
+    }
+    ul{
+        padding: 0;
+        margin: 0;
+        li{
+            list-style: none;
+            text-indent: 0;
+        }
+    }
+}
+
+section.title-banner{
+    background-color: lighten($color-primary, 20%);
+    padding: 1rem;
+}
