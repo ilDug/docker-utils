@@ -9,6 +9,7 @@ services:
     environment:
        MODE: ${MODE:-PRODUCTION} # PRODUCTION || DEVELOPMENT
        KEY_FILE: /run/secrets/my_secret
+       UNBUFFERED: 1 #mostra i print nel log
     ports:
       - 8000:8000
     volumes:
