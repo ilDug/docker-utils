@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  app2:
+    image: nginx
+    container_name: multisite
+    restart: unless-stopped
+    volumes:
+      - ./apps:/usr/share/nginx/html:ro
+      - ./conf:/etc/nginx/conf.d
+    ports:
+      - 8301:80
+    environment:
+      - TZ=Europe/Rome
