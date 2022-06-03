@@ -238,7 +238,7 @@ admin.createUser(
         ]
     }
 )
-db.grantRolesToUser("root", [
+admin.grantRolesToUser("root", [
     { db: "admin", role: "userAdminAnyDatabase"},
     { db: "admin", role: "dbAdminAnyDatabase" },
     { db: "admin", role: "clusterAdmin" },
