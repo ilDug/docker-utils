@@ -1,0 +1,56 @@
+version: '3.9'
+
+networks:
+  traefik_net:
+    name: traefik_net
+    driver: bridge
+
+volumes:
+  letsencrypt-certs:
+    driver: local
+
+services:
+  traefik:
+    # The official v2 Traefik docker image
+    image: traefik:v2.9
+    # Enables the web UI and tells Traefik to listen to docker
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+      # HTTPS
+      - "443:443"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik:/etc/traefik
+      - ./certs:/certs
+      # - letsencrypt-certs:/letsencrypt
+    networks:
+      - traefik_net
+
+
+# solo se non si vuole utlizzare i file di configurazione
+    # command: 
+    #   - --api.insecure=true
+    #   - --providers.docker=true
+    #   - --providers.docker.exposedbydefault=false
+    #   - --providers.file.directory=/configuration/
+    #   - --providers.file.watch=true
+    #   - --entrypoints.web.address=:80
+    #   - --entrypoints.websecure.address=:443
+    #   - --entrypoints.web.http.redirections.entrypoint.permanent=true
+    #   - --entrypoints.web.http.redirections.entrypoint.scheme=https
+    #   - --entrypoints.web.http.redirections.entrypoint.to=websecure
+
+
+
+
+
+
+
+
+

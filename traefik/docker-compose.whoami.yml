@@ -1,0 +1,46 @@
+version: '3'
+
+networks:
+  default:
+    name: traefik_net
+    external: true
+
+services:
+
+  whoami:
+    image: traefik/whoami
+    container_name: my-container
+    restart: unless-stopped
+
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.whoami.rule=Host(`xxx.lan`) && (PathPrefix(`/mypath`) || Path(`/`))"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls=true"
+
+      # - "traefik.http.routers.whoami.tls.certresolver=production_resolver"
+      
+      - "traefik.http.routers.whoami.tls.certresolver=production"
+      - "traefik.http.routers.whoami.middlewares=my_redirect_xxx@docker,mypath_stripprefix1@docker"
+      
+      # seleziona una posta specifica
+      - "traefik.http.services.whoami.loadbalancer.server.port=80"
+      
+      # middlewares (vari esempi)
+      - "traefik.http.middlewares.mypath_stripprefix1.stripprefix.prefixes=/mypath"
+
+      - "traefik.http.middlewares.my_redirect_specific.redirectregex.regex=^https:\\/\\/(sub\\.xxx\\.lan)\\/?$$"
+      - "traefik.http.middlewares.my_redirect_specific.redirectregex.replacement=https://sub.xxx.lan/mypath"
+
+      - "traefik.http.middlewares.my_redirect_general.redirectregex.regex=^https:\\/\\/([^\\/]+)\\/?$$"
+      - "traefik.http.middlewares.my_redirect_general.redirectregex.replacement=https://$$1/mypath"
+
+  networks:
+      - default
+  environment:
+      MODE: PRODUCTION
+      TZ: Europe/Rome
+  volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

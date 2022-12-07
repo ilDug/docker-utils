@@ -1,0 +1,33 @@
+# dynamic configuration PROXY
+http:
+
+# ROUTERS
+########################################################
+  routers:
+
+    # attiva l'accesso sicuro alla dashboaard di traefik
+    # proteggere con password
+    traefik_ui:
+      rule: Host(`proxy.xxx.lan`)
+      service: api@internal
+      entryPoints:
+       - websecure
+      tls: {}
+
+    myRouter1:
+      rule: Host(`xxx.lan`)
+      service: myService1
+      entryPoints:
+        - websecure
+        - web
+      tls: {}
+
+
+# SERVICES
+########################################################
+  services:
+
+    myService1:
+      loadBalancer:
+        servers:
+         - url: http://site.xxx.lan:xxxx
