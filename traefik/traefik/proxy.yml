@@ -31,3 +31,10 @@ http:
       loadBalancer:
         servers:
          - url: http://site.xxx.lan:xxxx
+
+# MIDDLEWARES
+########################################################
+    middlewares:
+        basic_auth:
+            basicAuth:
+                usersFile: "/etc/traefik/basic-auth/users.txt"
