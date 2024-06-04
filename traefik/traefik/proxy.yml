@@ -10,6 +10,8 @@ http:
     traefik_ui:
       rule: Host(`proxy.xxx.lan`)
       service: api@internal
+      middlewares:
+       - basic_auth
       entryPoints:
        - websecure
       tls: {}
